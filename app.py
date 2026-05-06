@@ -9,6 +9,47 @@ app = Flask(__name__)
 CORS(app)
 app.config["UPLOAD_FOLDER"] = "static/images"
 
+# Root route for Render health check
+@app.route('/')
+def root():
+    return jsonify({
+        'message': 'Kenya House Listings API',
+        'status': 'running',
+        'endpoints': [
+            '/api/health',
+            '/api/signin',
+            '/api/signup',
+            '/api/addproducts',
+            '/api/mpesa_payment',
+            '/api/premium_payment',
+            '/api/verify_listing_payment',
+            '/api/verify_premium_payment',
+            '/api/cart',
+            '/api/reservations'
+        ]
+    })
+
+# Health check endpoint for deployment monitoring
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'service': 'Kenya House Listings API',
+        'version': '1.0.0',
+        'timestamp': datetime.datetime.now().isoformat(),
+        'endpoints': [
+            '/api/signin',
+            '/api/signup', 
+            '/api/addproducts',
+            '/api/mpesa_payment',
+            '/api/premium_payment',
+            '/api/verify_listing_payment',
+            '/api/verify_premium_payment',
+            '/api/cart',
+            '/api/reservations'
+        ]
+    })
+
 
 def get_request_data():
     return request.get_json(silent=True) if request.is_json else request.form.to_dict()
@@ -438,4 +479,5 @@ def health_check():
     })
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
